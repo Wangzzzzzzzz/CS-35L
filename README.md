@@ -8,7 +8,7 @@ Fall 2018 CS35L. TA: Guangyu Zhou
 | Lab 1 | 100 | |
 | Lab 2 | 96 | sameln fails with files start with \*.| 
 | Lab 3 | 100 | |
-| Lab 4 | 98 | |
+| Lab 4 | 98 | -2 due to unknown reason |
 | Lab 5 | 100 | |
 | Lab 6 | 100 | |
 | Lab 7 | 100 | |
