@@ -1,6 +1,10 @@
 # CS-35L
 Fall 2018 CS35L. TA: Guangyu Zhou
 
+## homework prompts:
+
+https://web.cs.ucla.edu/classes/fall18/cs35L/
+
 ## Result Summary:
 
 | Lab number | score | Comments |
