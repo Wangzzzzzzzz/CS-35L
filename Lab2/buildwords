@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# remove all entries that is not of the form '<td>some_letters</td>'
+egrep '<td>.*</td>' |
+
+# remove all of the tabs at the start of each lines
+sed 's/^[[:space:]]*//g' |
+
+# remove all of the lines with no English or Hawaiian words
+sed 's/^<td><\/td>$//g' |
+sed '/^[[:space:]]*$/d' |
+
+# remove all of the html tags
+sed 's/<[^<>]*>//g' |
+
+# isolate all of the even lines (containing Hawaii words)
+sed -n '2~2p' |
+
+# change all of the ` to '
+tr [\`] [\'] |
+
+# change all of the upper case to lower classes
+tr [:upper:] [:lower:] |
+
+# remove all space at the end of the lines
+sed 's/ \+$//g' |
+
+# change space and/or comma to \n
+sed 's/,\? \+/\n/g' |
+
+# convert all '\r' to '\n'
+tr '\r' '\n' |
+
+# reject all non-Hawaiian WORDS
+sed '/[^pk'\''mnwlhaeiou]/d' |
+
+# sort the list of words and eliminate duplicates
+sort -u

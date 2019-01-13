@@ -1,0 +1,276 @@
+Wang, Zheng (404855295)
+CS35L lab3.txt
+
+* NOTE: this lab is done in directory ~/lab3
+
+1. Download and unpack Coreutils 8.29
+
+Commands:
+    wget ftp://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz
+    tar -xf coreutils-8.29.tar.xz
+
+-------------------------------------------------------------------------------
+
+2. Verify signature with GNU keyring
+
+Commands:
+    wget ftp://ftp.gnu.org/gnu/coreutils/coreutils-8.29.tar.xz.sig
+    wget https://ftp.gnu.org/gnu/gnu-keyring.gpg
+    gpg --verify --keyring ./gnu-keyring.gpg coreutils-8.29.tar.xz.sig
+
+
+Output:
+gpg: directory `/u/eng/class/classini/.gnupg' created
+gpg: new configuration file `/u/eng/class/classini/.gnupg/gpg.conf' created
+gpg: WARNING: options in `/u/eng/class/classini/.gnupg/gpg.conf' are not yet
+active during this run
+gpg: keyring `/u/eng/class/classini/.gnupg/pubring.gpg' created
+gpg: Signature made Wed 27 Dec 2017 10:29:05 AM PST using RSA key ID 306037D9
+gpg: /u/eng/class/classini/.gnupg/trustdb.gpg: trustdb created
+gpg: Good signature from "Pádraig Brady <P@draigBrady.com>"
+gpg:                 aka "Pádraig Brady <pbrady@redhat.com>"
+gpg:                 aka "Pádraig Brady <pixelbeat@gnu.org>"
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 6C37 DC12 121A 5006 BC1D  B804 DF6F D971 3060 37D9
+
+
+#   To deal with the first warning, I run the last command again and no longer
+    get the warning. The first WARNING arises since it is the first time I
+    run the gpg command.
+
+
+Commands:
+    gpg --verify --keyring ./gnu-keyring.gpg coreutils-8.29.tar.xz.sig
+
+
+Output:
+gpg: Signature made Wed 27 Dec 2017 10:29:05 AM PST using RSA key ID 306037D9
+gpg: Good signature from "Pádraig Brady <P@draigBrady.com>"
+gpg:                 aka "Pádraig Brady <pbrady@redhat.com>"
+gpg:                 aka "Pádraig Brady <pixelbeat@gnu.org>"
+gpg: WARNING: This key is not certified with a trusted signature!
+gpg:          There is no indication that the signature belongs to the owner.
+Primary key fingerprint: 6C37 DC12 121A 5006 BC1D  B804 DF6F D971 3060 37D9
+
+
+#   The "Good signature" indicates that the package is certified. The warning
+    message get is due to fact that I did not sign this key with my own key,
+    the package itself is trust-worthy.
+
+-------------------------------------------------------------------------------
+
+3. compile and install
+
+(a) make the temporary directory of installation
+Commands:
+    mkdir coreutils_temp
+
+
+(b) check the configuration and generate makefile
+Commands:
+    cd ./coreutils-8.29/
+    ./configure --prefix=/u/eng/class/classini/lab3/coreutils_temp
+
+
+(c) run makefile and install on the desired directory
+Commands:
+    make
+    make install
+
+-------------------------------------------------------------------------------
+
+4. Reproduce the bug
+
+(a) go to the directory where 'ls' is installed
+Commands:
+    cd ~/lab3/coreutils_temp/bin
+
+(b) try all permutations of the '-a' and '-A' options
+Commands:
+    ./ls -a -A
+    ./ls -A -a
+    ./ls -Aa
+    ./ls -aA
+
+Output (they are all the same):
+ .	    csplit      fold	  mktemp     readlink	 stat	    uname
+ ..	    cut         groups	  mv	     realpath	 stdbuf     unexpand
+'['	    date        head	  nice	     rm		 stty	    uniq
+ b2sum	    dd	        hostid	  nl	     rmdir	 sum	    unlink
+ base32     df	        id	  nohup      runcon	 sync	    uptime
+ base64     dir         install   nproc      seq	 tac	    users
+ basename   dircolors   join	  numfmt     sha1sum	 tail	    vdir
+ cat	    dirname     kill	  od	     sha224sum	 tee	    wc
+ chcon	    du	        link	  paste      sha256sum	 test	    who
+ chgrp	    echo        ln	  pathchk    sha384sum	 timeout    whoami
+ chmod	    env         logname   pinky      sha512sum	 touch	    yes
+ chown	    expand      ls	  pr	     shred	 tr
+ chroot     expr        md5sum	  printenv   shuf	 true
+ cksum	    factor      mkdir	  printf     sleep	 truncate
+ comm	    false       mkfifo	  ptx	     sort	 tsort
+ cp	    fmt         mknod	  pwd	     split	 tty
+
+#   Since the output of the command above include both '.' and '..' file in
+    the output, this would be the bug described in the question. It is obvious
+    that option '-a' will always override the command '-A', which is a bug.
+    In fact, '-A' is expected to override '-a' option when it appear later in
+    a command.
+
+-------------------------------------------------------------------------------
+
+5. Apply the patch of Bug#30963
+
+(a) Get the patch from the web and rename it
+Commands:
+    cd ~/lab3
+    touch ls_bug.patch
+    nano ls_bug.patch
+    <paste the webpage to the file>
+    C-o Enter C-x
+
+#   NOTE: I tried the command wget https://debbugs.gnu.org/cgi/bugreport.cgi?
+    filename=0001-ls-A-now-overrides-a.patch;bug=30963;att=1;msg=10, but it
+    does not seem to successfully download the file and produce useless file.
+    So I finally use nano and paste the code into the file.
+
+(b) Patch the corresponding files
+Commands:
+    cd coreutils-8.29
+    patch -p1 <~/lab3/ls_bug.patch
+
+#   NOTE: I cannot patch the NEWS since it always return an error saying that
+    it cannot save to the file NEWS
+    (The actual message is:
+    Hunk #1 FAILED at 4.
+    1 out of 1 hunk FAILED -- saving rejects to file NEWS.rej)
+    From the piazza, it seems that not patching NEWS is OK. Thus, I continue
+    without patching NEWS
+
+-------------------------------------------------------------------------------
+
+6. Recompile the changes made by patch
+
+Commands:
+    cd ~/lab3/coreutils-8.29
+    autoreconf -i -f
+    make
+
+#   Explanation of why to run the command:
+
+    'cd ~/lab3/coreutils-8.29'
+    Reason:   To go to the top of the source tree
+
+    'autoreconf -i -f'
+    Reason:   Directly running 'make' at the top of the source tree seems to
+    cause errors as 'automake-1.15' is missing on my system. This command will
+    prevent the error from happening.
+
+    'make'
+    Reason:   To compile the changed files (but not installing them so that
+    we will have an old, unchanged version to compare with)
+
+-------------------------------------------------------------------------------
+
+7. Check that the bug has been fixed
+
+#   NOTE: test the patched ls:
+
+Commands:
+    cd ~/lab3/coreutils-8.29/src
+    ./ls -a -A ~/lab3/coreutils_temp/bin
+    ./ls -aA ~/lab3/coreutils_temp/bin
+
+Output (same for commands with option '-a -A' and '-aA' ):
+'['	    cut         fold	  mknod      ptx	 sleep	   true
+ b2sum	    date        groups	  mktemp     pwd	 sort	   truncate
+ base32     dd	        head	  mv	     readlink	 split	   tsort
+ base64     df	        hostid	  nice	     realpath	 stat	   tty
+ basename   dir         id	  nl	     rm		 stdbuf    uname
+ cat	    dircolors   install   nohup      rmdir	 stty	   unexpand
+ chcon	    dirname     join	  nproc      runcon	 sum	   uniq
+ chgrp	    du	        kill	  numfmt     seq	 sync	   unlink
+ chmod	    echo        link	  od	     sha1sum	 tac	   uptime
+ chown	    env         ln	  paste      sha224sum	 tail	   users
+ chroot     expand      logname   pathchk    sha256sum	 tee	   vdir
+ cksum	    expr        ls	  pinky      sha384sum	 test	   wc
+ comm	    factor      md5sum	  pr	     sha512sum	 timeout   who
+ cp	    false       mkdir	  printenv   shred	 touch	   whoami
+ csplit     fmt         mkfifo	  printf     shuf	 tr	   yes
+
+Commands:
+    ./ls -A -a ~/lab3/coreutils_temp/bin
+    ./ls -Aa ~/lab3/coreutils_temp/bin
+
+Outputs (same for commands with option '-A -a' and '-Aa' ):
+ .	    csplit      fold	  mktemp     readlink	 stat	    uname
+ ..	    cut         groups	  mv	     realpath	 stdbuf     unexpand
+'['	    date        head	  nice	     rm		 stty	    uniq
+ b2sum	    dd	        hostid	  nl	     rmdir	 sum	    unlink
+ base32     df	        id	  nohup      runcon	 sync	    uptime
+ base64     dir         install   nproc      seq	 tac	    users
+ basename   dircolors   join	  numfmt     sha1sum	 tail	    vdir
+ cat	    dirname     kill	  od	     sha224sum	 tee	    wc
+ chcon	    du	        link	  paste      sha256sum	 test	    who
+ chgrp	    echo        ln	  pathchk    sha384sum	 timeout    whoami
+ chmod	    env         logname   pinky      sha512sum	 touch	    yes
+ chown	    expand      ls	  pr	     shred	 tr
+ chroot     expr        md5sum	  printenv   shuf	 true
+ cksum	    factor      mkdir	  printf     sleep	 truncate
+ comm	    false       mkfifo	  ptx	     sort	 tsort
+ cp	    fmt         mknod	  pwd	     split	 tty
+
+...............................................................................
+
+#   NOTE: Shift to the old buggy ls:
+
+Commands:
+    cd ~/lab3/coreutils_temp/bin/
+    ./ls -a -A
+    ./ls -aA
+    ./ls -A -a
+    ./ls -Aa
+
+Output (the output is same for all of the four commands above):
+ .	    csplit      fold	  mktemp     readlink	 stat	    uname
+ ..	    cut         groups	  mv	     realpath	 stdbuf     unexpand
+'['	    date        head	  nice	     rm		 stty	    uniq
+ b2sum	    dd	        hostid	  nl	     rmdir	 sum	    unlink
+ base32     df	        id	  nohup      runcon	 sync	    uptime
+ base64     dir         install   nproc      seq	 tac	    users
+ basename   dircolors   join	  numfmt     sha1sum	 tail	    vdir
+ cat	    dirname     kill	  od	     sha224sum	 tee	    wc
+ chcon	    du	        link	  paste      sha256sum	 test	    who
+ chgrp	    echo        ln	  pathchk    sha384sum	 timeout    whoami
+ chmod	    env         logname   pinky      sha512sum	 touch	    yes
+ chown	    expand      ls	  pr	     shred	 tr
+ chroot     expr        md5sum	  printenv   shuf	 true
+ cksum	    factor      mkdir	  printf     sleep	 truncate
+ comm	    false       mkfifo	  ptx	     sort	 tsort
+ cp	    fmt         mknod	  pwd	     split	 tty
+
+
+...............................................................................
+
+#   The bug has been fixed, with '-A' able to override '-a' when '-A'
+    comes after '-a'.
+    This is because the "." and ".." are no longer displayed when running
+    the first two './ls' commands:
+        ./ls -a -A ~/lab3/coreutils_temp/bin
+    and
+        ./ls -aA ~/lab3/coreutils_temp/bin
+
+    Moreover, the functionality that '-a' overrides '-A' when '-a' comes
+    after '-A' is preserved.
+    This is because the "." and ".." are displayed when running the last two
+    './ls' commands:
+        ./ls -A -a ~/lab3/coreutils_temp/bin
+    and
+        ./ls -Aa ~/lab3/coreutils_temp/bin
+
+    For the buggy version installed at ~/lab2/coreutils_temp/bin, since for
+    all permutations of options '-a' and '-A', '-a' will override the other.
+    ("." and ".." will always be present) Thus, while we have applied the
+    patch to ls at ~/lab3/coreutils-8.29/src, the one we previously installed
+    is not affected and is still buggy.
+-------------------------------------------------------------------------------

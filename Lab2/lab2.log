@@ -1,0 +1,215 @@
+lab2.log - Wang, Zheng (404855295)
+
+1. set locale
+
+command:  export LC_ALL='C'
+
+--------------------------------------------------------------------------------
+
+2. make the sorted word list
+
+command:  sort -u /usr/share/dict/words >words
+
+--------------------------------------------------------------------------------
+
+3. get the html file of the page
+
+command:  wget http://web.cs.ucla.edu/classes/fall18/cs35L/assign/assign2.html
+
+--------------------------------------------------------------------------------
+
+4. use the 'tr' commands:
+
+(a)
+command:  tr -c 'A-Za-z' '[\n*]' <assign2.html >com1.html
+
+Since '-c' specifies the matching set is the compliment of all alphabets. This
+will replace EVERY characters that is NOT alphabet and replace it with a new
+line character (\n).
+
+
+(b)
+command:  tr -cs 'A-Za-z' '[\n*]' <assign2.html >com2.html
+
+Since '-cs' specifies the matching set is the compliment of all alphabets.
+This will replace non-alphabets with a new line character. However, since
+we are using '-cs' here, any consecutive non-alphabets with a SINGLE new-line
+character (\n).
+
+
+(c)
+command:  tr -cs 'A-Za-z' '[\n*]' <assign2.html | sort >com3.html
+
+We are again using '-cs' option here, so the command before the pipe will
+still replace all consecutive non-alphabets with a single new-line character
+(\n).
+The pipe then pass this output into the sort, which sorts the output according
+to the order specified by LC_ALL='C'. (Note that a word can appear more than
+once)
+
+
+(d)
+command:  tr -cs 'A-Za-z' '[\n*]' <assign2.html | sort -u >com4.html
+
+With '-cs' option here, the command first replace all consecutive
+non-alphabets with a single new-line character (\n).
+This output is then sorted, (with order specified by LC_ALL='C'). But this,
+time, since we use option '-u', which stands for unique, each word can only
+appear once in the resulting file.
+
+
+(e)
+command:
+tr -cs 'A-Za-z' '[\n*]' <assign2.html | sort -u | comm - words >com5.html
+
+Before we get to 'comm - words', we will get the output of (d). Then, this
+output is used as file1 argument of 'comm' command (file2 here is words).
+Since the default option is used by 'comm' (we does not specify it), according
+to the manual, the output (com5.html) will contain three columns: column one
+contains lines unique to the output of (d), column two contains lines unique
+to words, and column three contains lines common to both files.
+
+
+(f)
+command:
+tr -cs 'A-Za-z' '[\n*]' <assign2.html | sort -u | comm -23 - words >com6.html
+
+Here, the output of (d) will be used as file1 argument and words will be used
+as file2 argument for comm. Since we use option '-23' for comm. The output
+will only one column (column 2 and 3 are suppressed). So we only get the
+column contains lines unique to output of (d).
+
+--------------------------------------------------------------------------------
+
+5. Hawaiian checker
+
+(1) create the html file
+command:
+wget http://mauimapp.com/moolelo/hwnwdseng.htm -O hawadict.html
+
+
+(2) buildwords script
+#!/bin/bash
+
+# remove all entries that is not of the form '<td>some_letters</td>'
+egrep '<td>.*</td>' |
+
+# remove all of the tabs at the start of each lines
+sed 's/^[[:space:]]*//g' |
+
+# remove all of the lines with no English or Hawaiian words
+sed 's/^<td><\/td>$//g' |
+sed '/^[[:space:]]*$/d' |
+
+# remove all of the html tags
+sed 's/<[^<>]*>//g' |
+
+# isolate all of the even lines (containing English words)
+sed -n '2~2p' |
+
+# change all of the ` to '
+tr [\`] [\'] |
+
+# change all of the upper case to lower classes
+tr [:upper:] [:lower:] |
+
+# remove all space at the end of the lines
+sed 's/ \+$//g' |
+
+# change space and/or comma to \n
+sed 's/,\? \+/\n/g' |
+
+# convert all '\r' to '\n'
+tr '\r' '\n' |
+
+# reject all non-Hawaiian WORDS
+sed '/[^pk'\''mnwlhaeiou]/d' |
+
+# sort the list of words and eliminate duplicates
+sort -u
+
+--------------------------------------------------------------------------------
+
+6. using word checker
+
+(1) make the word checker executable
+command:  chmod +x ./buildwords
+
+
+(2) construct file hwords
+command:  ./buildwords <hawadict.html >hwords
+
+
+(3) perpare the webpage
+command:
+wget http://web.cs.ucla.edu/classes/fall18/cs35L/assign/assign2.html -O wp.html
+
+
+(4) Check misspelled English
+    I first eliminate the non-alphabets form the html file of the webpage,
+    then I piped the result to 'tr' to change all of the upper case to lower
+    cases. And I store the result as file wpEng.
+
+    Then I sort wpEng and run 'comm' with the sorted output as input file1
+    and words as input file2, the '-23' option is used so that we only get
+    words that are misspelled (present in the webpage but not in dictionary).
+
+    Then I use 'wc -w' to obtian that there are 38 misspelled English Words.
+
+command:
+tr -cs 'A-Za-z' '[\n*]' <wp.html | tr [:upper:] [:lower:] >wpEng
+
+sort -u <wpEng | comm -23 - words >misspell_eng
+
+wc -w <misspell_eng
+
+    There are 38 misspelled English words.
+
+
+(5) check misspelled misspelled Hawaiian words
+    I first eliminate the non-Hawaiian characters form the html file of the
+    webpage, then I piped the result to 'tr' to change all of the upper
+    case to lower cases. And I store the result as file wpHaw.
+
+    Then I sort wpHaw and run 'comm' with the sorted output as input file1
+    and words as input file2, the '-23' option is used so that we only get
+    words that are misspelled (present in the webpage but not in dictionary).
+
+    Then I use 'wc -w' to obtian that there are 199 misspelled Hawaiian Words.
+
+command:
+tr -cs 'pk'\''mnwlhaeiou' '[\n*]' <wp.html | tr [:upper:] [:lower:] >wpHaw
+
+sort -u <wpHaw | comm -23 - hwords >misspell_haw
+
+wc -w <misspell_haw
+
+    There are 199 misspelled Hawaiian words.
+
+
+(6) misspelled English but correct as Hawaiian
+command:  sort -u misspell_eng | comm -12 - hwords
+
+    There are 3 words that are misspelled in English but correct in Hawaiian:
+
+    halau
+    lau
+    wiki
+
+
+(7) misspelled Hawaiian but correct as English
+command:  sort -u misspell_haw | comm -12 - words
+
+    There are 108 such words that are misspelled in Hawaiian but correct in
+    English (10 examples are shown here):
+
+    a
+    ail
+    ain
+    ake
+    al
+    ale
+    alen
+    all
+    amine
+    amp

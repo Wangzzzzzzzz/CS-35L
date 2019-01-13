@@ -1,0 +1,10 @@
+#!/bin/bash
+
+for exes in "$(ls /usr/bin | awk 'NR%101==404855295%101')"
+do
+    place=`which $exes`
+    # echo $place
+    ldd $place
+done
+
+# end of run_ldd

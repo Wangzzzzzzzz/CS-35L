@@ -1,0 +1,24 @@
+Wang, Zheng (404855295)
+CS35L gitk-description.txt
+
+1. Upper Left Sub-window:
+    It shows the commit tree of the repository. This can show each commit's
+    relationship. It can also show when a branch is created or merged.
+    The commitment message is also displayed at this window.
+
+2. Upper Middle Sub-window:
+    It shows the author's name and his/her email of a list of commits
+
+3. Upper Right Sub-window:
+    It shows the exact time (year, month, day, and time) of a list of commits
+
+4. Lower Left Sub-window:
+    It shows the details of commit selected (such as author, time of commit,
+    hash number, and branch the commit located). The window also show
+    the changed made by a commit in diff format (other options like old file or
+    new file can be selected).
+
+5. Lower Right Sub-window:
+    It shows all files updated for a commit selected. This also include the
+    Comment of the commit(i.e. all information of the commit). It can also show
+    the "tree", which is the full project directory.

@@ -1,0 +1,251 @@
+Wang, Zheng (404855296)
+CS35L lab.txt
+
+
+Question 1, 2
+
+The exact implementation is done in "tr2b.c" (for question 1) and "tr2u.c" (for question 2). So,
+here I will introduce the general idea involved while implemeting the two files above.
+
+The first thing I do is to implement the 'checker' function present in both file. This is to check
+the error in the argument before everything starts. It mainly checks three things:
+    1. Is the argument number correct? ( by check the argc parameter )
+    2. Does the length of 'from' and 'to' equal? ( by check the strlen(from) and strlen(to) )
+    3. Does the 'from' string has any duplicated bytes? ( by two nested loops )
+
+After the above three are check, the next step is to read the string to be translated from stdin. In
+the "tr2b.c", this is done by 'getchar()' and 'putchar()' and in "tr2u.c", this is done by 'read()'
+and 'write()'.
+To prevent the EOF character at the middle of the file halting the program in the middle (as
+discussed in the piazza for LAB 4), I used feof(stdin) as the end condition of 'getchar()' in
+"tr2b.c".
+I also implement a 'search()' function that return the index of character find in 'from' (if not
+found, the function returns -1). I used it to do the transliteration: if the function returns -1,
+then I will output the original character I read from stdin, otherwise, I will output the
+character of 'to' at the index position returned by 'search()'.
+
+
+Command to compile:
+
+#   As the TA indicated that the running environment will be C11, thus the following commands are used
+
+    gcc -std=c11 tr2b.c -o tr2b
+    gcc -std=c11 tr2u.c -o tr2u
+
+-------------------------------------------------------------------------------------------------------------------
+
+Question 3
+
+#   generate a file of size 5,000,000 bytes
+
+Commands:
+    dd if=/dev/urandom of=input.txt bs=5000001 count=1
+
+Confirmation of what we just done is correct:
+    wc -c input.txt
+
+Output:
+5000001 input.txt
+
+#   NOTE: So the file we just created is OK with 5,000,001 bytes.
+
+..................................................................................................................
+
+Run 'strace' to check the system calls:
+(a) copy a file to another
+
+#   1. test for tr2b
+Commands:
+    strace -c ./tr2b '12' '34' <input.txt >output1.txt
+
+Output (only the summary is shown):
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 66.54    0.000513           1       611           write
+ 33.46    0.000258           0       613           read
+  0.00    0.000000           0         2           open
+  0.00    0.000000           0         2           close
+  0.00    0.000000           0         4           fstat
+  0.00    0.000000           0         9           mmap
+  0.00    0.000000           0         4           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.000771                  1250         1 total
+
+
+#   2. test for tr2u
+Commands:
+    strace -c ./tr2u '12' '34' <input.txt >output2.txt
+
+Output (only the summary is shown):
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 55.52   20.226834           4   5000001           write
+ 44.48   16.207944           3   5000003           read
+  0.00    0.000015          15         1           munmap
+  0.00    0.000000           0         2           open
+  0.00    0.000000           0         2           close
+  0.00    0.000000           0         2           fstat
+  0.00    0.000000           0         7           mmap
+  0.00    0.000000           0         4           mprotect
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00   36.434793              10000026         1 total
+
+
+#   OBSERVATION: From the above results, it is certain that the unbuffered version (tr2u) runs much slower
+    than the buffered version (tr2b). This is mainly due to the fact that the buffered version will
+    require less system calls. (only about 610 'read' and 'write' are needed for a 5,000,000-byte file)
+    However, the unbuffered version will need to do system call for each byte in the file (both
+    read and write) and is much slower.
+
+..................................................................................................................
+
+(b) copy a file to the terminal
+#   1. test for tr2b
+Commands:
+    strace -c ./tr2b '12' '34' <input.txt
+
+Output (only the summary is shown):
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 97.56    0.068285           3     19903           write
+  2.10    0.001470           2       613           read
+  0.13    0.000089          10         9           mmap
+  0.06    0.000045          45         1           brk
+  0.04    0.000026           7         4           mprotect
+  0.02    0.000016           4         4           fstat
+  0.02    0.000016          16         1           execve
+  0.02    0.000015           8         2           open
+  0.02    0.000011          11         1         1 access
+  0.01    0.000010          10         1           munmap
+  0.01    0.000007           4         2           close
+  0.00    0.000003           3         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00    0.069993                 20542         1 total
+
+#   2. test for tr2u
+Commands:
+    strace -c ./tr2u '12' '34' <input.txt
+
+Output:
+% time     seconds  usecs/call     calls    errors syscall
+------ ----------- ----------- --------- --------- ----------------
+ 57.10   22.633890           5   5000001           write
+ 42.90   17.005676           3   5000003           read
+  0.00    0.000000           0         2           open
+  0.00    0.000000           0         2           close
+  0.00    0.000000           0         2           fstat
+  0.00    0.000000           0         7           mmap
+  0.00    0.000000           0         4           mprotect
+  0.00    0.000000           0         1           munmap
+  0.00    0.000000           0         1           brk
+  0.00    0.000000           0         1         1 access
+  0.00    0.000000           0         1           execve
+  0.00    0.000000           0         1           arch_prctl
+------ ----------- ----------- --------- --------- ----------------
+100.00   39.639566              10000026         1 total
+
+#   OBSERVATION: the buffered version (tr2b) will run slower in this case. This could be
+    caused by the need of outputting bytes to the terminal, which will take longer.
+    However, it is still much faster than the unbuffered version (tr2u). The unbuffered
+    version (tr2u) will take the same number of 'read' and 'write' calls as the copy-into-file
+    case.
+
+-----------------------------------------------------------------------------------------------------------------
+
+Question 4
+
+#   I will assume that measuring time for both copying into file and copying into terminal
+    are necessary.
+
+(a) copy into another file
+#   1. test for tr2b
+Commands:
+    time ./tr2b '12' '34' <input.txt >output1_4.txt
+
+Output:
+real    0m0.372s
+user    0m0.216s
+sys     0m0.010s
+
+#   2. test fro tr2u
+Commands:
+    time ./tr2u '12' '34' <input.txt >output2_4.txt
+
+Output:
+real    0m9.674s
+user    0m1.247s
+sys     0m8.332s
+
+.................................................................................................................
+
+(b) copy into the terminal
+
+#   1. test for tr2b
+Commands:
+    time ./tr2b '12' '34' <input.txt
+
+Output:
+real    0m7.798s
+user    0m0.277s
+sys     0m0.082s
+
+#   2. test fro tr2u
+Commands:
+    time ./tr2u '12' '34' <input.txt
+
+Output:
+real    0m9.253s
+user    0m1.211s
+sys     0m8.028s
+
+#   OBSERVATION: the result I got from 'time' command is consistent with the observation I got from 'strace'.
+    The buffered version (tr2b) will run faster than the unbuffered version (tr2u) in both case since the
+    buffered version will take less time to do system call (spend less time in sys).
+    Also, the time taken for unbuffered version (tr2u) is almost constant for both cases because it spends
+    almost the same time on system calls.
+
+----------------------------------------------------------------------------------------------------------------
+
+Issue Encountered:
+
+Issue 1:    EOF present before the end of input.txt. (only for buffered version)
+Solution:   use feof(stdin) as the end condition of 'getchar()' in file "tr2b.c"
+
+Check that the solution works:
+    Commands:
+    wc -c output1.txt output2.txt output1_4.txt output2_4.txt
+
+    Output:
+    5000001 output1.txt
+    5000001 output2.txt
+    5000001 output1_4.txt
+    5000001 output2_4.txt
+    20000004 total
+
+Explanation:
+    I checked that input.txt has EOF in the middle.
+    Since in the file outputs are all of 5,000,001 bytes, so the program has no trouble handling EOF
+    that occurs in the middle.
+
+.................................................................................................................
+
+Issue 2:    The bell of iTerm2 slows down the processing time and increase the variance of the running time
+Solution:   Silent the bell. The output recorded is based on running the commands with bell silenced
+
+Before silent the bell, an instance of the time outputs (runing tr2u):
+
+real    0m27.723s
+user    0m1.241s
+sys     0m7.870s
+
+It is possible to see that the although the sys and user time is about the same, the real time is significantly
+slower. Silent the bell will fix this issue.

@@ -1,0 +1,214 @@
+Wang, Zheng (404855295)
+CS35L log.txt
+
+# My partner for this lab is Henry Ou (//UID//)
+
+I first setup the Beaglebone according to the instruction listed on piazza and connect to
+the wifi "CR3760-wifi" (my parter also connect to that wifi)
+
+
+1. Update software and install xauth, xvfb, and firefox
+Commands:
+    root@beaglebone:~# sudo apt-get update
+    root@beaglebone:~# sudo apt-get install xauth
+    root@beaglebone:~# sudo apt-get install xvfb
+    root@beaglebone:~# sudo apt-get install firefox-esr-l10n-en-gb
+
+2. Check that openssh has been installed
+Commands:
+    root@beaglebon:~# dpkg --get-selections | grep openssh
+
+Output:
+    openssh-client					install
+    openssh-server					install
+    openssh-sftp-server				install
+
+#   Thus, the above output shows that the openssh has been installed. However, in order to
+    ensure that I am running the same version of openssh as my parter, I run the following
+    to be safe. These commands show that the newest version has already been installed (and
+    so does my partner), so we are running the same version
+
+Commands:
+    root@beaglebon:~# sudo apt-get install openssh-server
+    root@beaglebon:~# sudo apt-get install openssh-client
+
+
+3. Generate ssh key (follow the server step-up page on the slide)
+Commands:
+    root@beaglebon:~# ssh-keygen
+
+Output:
+    Generating public/private rsa key pair.
+    Enter file in which to save the key (/root/.ssh/id_rsa):
+    Created directory '/root/.ssh'.
+    Enter passphrase (empty for no passphrase):
+    Enter same passphrase again:
+    Your identification has been saved in /root/.ssh/id_rsa.
+    Your public key has been saved in /root/.ssh/id_rsa.pub.
+    The key fingerprint is:
+    1c:95:77:6a:9b:47:7a:49:da:e1:3f:b9:6e:2d:be:8a root@beaglebone
+    The key's randomart image is:
+    +---[RSA 2048]----+
+    |          ..     |
+    |         .. . .  |
+    |        .  . o   |
+    |       . .  o +  |
+    |        S  . X o |
+    |            = *  |
+    |             o .o|
+    |           .  .+o|
+    |          E .o==o|
+    +-----------------+
+
+
+4. Create new user (for my partner)
+Commands:
+    root@beaglebone:~# sudo useradd -d /home/henryou01 -m henryou01
+    root@beaglebone:~# sudo passwd henryou01        # the password supplied is 12345
+    root@beaglebone:~# cd /home/henryou01/
+    root@beaglebone:/home/henryou01# sudo mkdir .ssh
+    root@beaglebone:/home/henryou01# sudo chown -R henryou01 .ssh
+    root@beaglebone:/home/henryou01# sudo chmod 700 .ssh
+
+
+#   my account on my partner's beaglebone is tempuser, password is 12345678
+
+
+5. check the IP
+Commands:
+    root@beaglebone:/home/henryou01# cd
+    root@beaglebone:~# ifconfig
+
+Output:
+    SoftAp0   Link encap:Ethernet  HWaddr 9c:1d:58:3e:90:f4
+          inet addr:192.168.8.1  Bcast:192.168.8.255  Mask:255.255.255.0
+          inet6 addr: fe80::9e1d:58ff:fe3e:90f4/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:95 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:0 (0.0 B)  TX bytes:24772 (24.1 KiB)
+
+    lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          inet6 addr: ::1/128 Scope:Host
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:1217 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:1217 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1
+          RX bytes:101507 (99.1 KiB)  TX bytes:101507 (99.1 KiB)
+
+    usb0      Link encap:Ethernet  HWaddr 9c:1d:58:3e:90:f0
+          inet addr:192.168.7.2  Bcast:192.168.7.255  Mask:255.255.255.0
+          inet6 addr: fe80::9e1d:58ff:fe3e:90f0/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+          RX packets:7005 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:3045 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:1248400 (1.1 MiB)  TX bytes:1001697 (978.2 KiB)
+
+    wlan0     Link encap:Ethernet  HWaddr 2c:f7:f1:06:69:a0
+          inet addr:10.97.85.244  Bcast:10.97.85.255  Mask:255.255.255.0
+          inet6 addr: fe80::2ef7:f1ff:fe06:69a0/64 Scope:Link
+          UP BROADCAST RUNNING MULTICAST DYNAMIC  MTU:1500  Metric:1
+          RX packets:19156 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:4537 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1000
+          RX bytes:25438052 (24.2 MiB)  TX bytes:472087 (461.0 KiB)
+
+#     The ip of my beaglebone is 10.97.85.244, my partner's ip is 10.97.85.240
+
+
+6. Setup Client (follow the client step-up page on the slide)
+Commands:
+    root@beaglebone:~# ssh-copy-id –i tempuser@10.97.85.240
+
+
+Output:
+    The authenticity of host '10.97.85.240 (10.97.85.240)' can't be established.
+    ECDSA key fingerprint is 37:77:b1:81:66:85:b2:76:cb:4c:65:e5:9a:72:ac:22.
+    Are you sure you want to continue connecting (yes/no)? yes
+    /usr/bin/ssh-copy-id: INFO: attempting to log in with the new key(s), to filter out any that are already installed
+    /usr/bin/ssh-copy-id: INFO: 1 key(s) remain to be installed -- if you are prompted now it is to install the new keys
+    Debian GNU/Linux 8
+
+    BeagleBoard.org Debian Image 2016-10-20
+
+    Support/FAQ: http://elinux.org/Beagleboard:BeagleBoneBlack_Debian
+
+    default username:password is [debian:temppwd]
+
+    tempuser@10.97.85.240's password:
+
+    Number of key(s) added: 1
+
+    Now try logging into the machine, with:   "ssh 'tempuser@10.97.85.240'"
+    and check to make sure that only the key(s) you wanted were added.
+
+Commands:
+    root@beaglebone:~# eval $(ssh-agent)
+    Agent pid 15362
+    root@beaglebone:~# ssh-add
+    Identity added: /root/.ssh/id_rsa (rsa w/o comment)
+
+
+7. Connection and Verify that the connection works
+
+Commands:
+    root@beaglebone:~# ssh tempuser@10.97.85.240
+
+Outputs:
+    Debian GNU/Linux 8
+
+    BeagleBoard.org Debian Image 2016-10-20
+
+    Support/FAQ: http://elinux.org/Beagleboard:BeagleBoneBlack_Debian
+
+    default username:password is [debian:temppwd]
+
+Commands after ssh into my partner's beaglebone:
+    $ cd /home/tempuser
+    $ touch test.txt
+    $ ls -l .
+    total 0
+    -rw-r--r-- 1 tempuser tempuser 0 Nov 28 23:44 test.txt
+    $ exit
+
+#   To check that my partner has left the files on my beaglebone, I run the following
+    commands. My partner has also done a similar test on his beaglebone and got a
+    similar result
+
+    root@beaglebone:~# root@beaglebone:~#cd /home/henryou01
+    root@beaglebone:~# ls -l
+    total 0
+    -rw-r--r-- 1 henryou01 henryou01 0 Nov 28 23:44 henrywashere
+
+
+8. Connect with GUI.
+
+#   I set up the Putty so that the option 'Enable X11 forwarding' in
+    Connection -> SSH -> X11 is checked. I then run the following commands.
+#   Note: I did not do the following in my mac, instead, I used a Windows laptop to
+    do this.
+
+Commands:
+    root@beaglebone:~# ssh -X tempuser@10.97.85.240
+    $ firefox
+
+A few minutes later, the firefox will pop up.
+
+
+9. The difference between -X option and -Y option
+
+Commands:
+    root@beaglebone:~# ssh -Y tempuser@10.97.85.240
+    $ firefox
+
+#   I look up the internet and found that using -Y will treat my partner's beaglebone as a
+    trusted client, while -X option will treat my partner's beaglebone as a untrusted client.
+    Many applications and commands will fail when using -X option, but will work properly
+    using -Y option (if the commands rise security issues).
+    On Putty, it seems that there is no difference in terms of the interfaces between -X and -Y.
+    I run firefox connected using both command. This is likely because the set up of my beaglebone
+    in /etc/ssh/ssh_config has option "ForwardX11Trusted yes", which treats the -X option as -Y to
+    ensure that the all the commands and application will work.

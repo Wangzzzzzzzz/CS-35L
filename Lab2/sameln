@@ -1,0 +1,82 @@
+#!/bin/bash
+
+direc=$1
+
+# index trace of files
+declare -i index
+let index=0
+# array of file check list
+declare -a fcheckls
+
+#copy the old IFS for restore
+old_IFS=$IFS
+IFS=$'\n'
+
+normf=$(ls $direc | sort)
+hidef=$(ls -A $direc | egrep '^\.' | sort) # ignore file .  and  ..
+
+# push all of the hidden files into the checklist
+for hfile in $hidef
+do
+    # a directory or symlink
+    if [ -d "$direc/$hfile" ] || [ -L "$direc/$hfile" ]
+    then
+        continue
+    # a socket or named pipe
+    elif [ -S "$direc/$hfile" ] || [ -p "$direc/$hfile" ]
+    then
+        continue
+    elif test ! -f "$direc/$hfile" # not a regular file
+    then
+        continue
+    elif test ! -r "$direc/$hfile"  # not readable
+    then
+        echo "file \'$hfile\' is not readable."
+    else
+        fcheckls[$index]="$direc/$hfile"
+        let index++
+    fi
+done
+
+# push all of the normal files into the checklist
+for nfile in $normf
+do
+    if [ -d "$direc/$nfile" ] || [ -L "$direc/$nfile" ]
+    then
+        continue
+    elif [ -S "$direc/$nfile" ] || [ -p "$direc/$nfile" ]
+    then
+        continue
+    elif test ! -f "$direc/$nfile" # not a regular file
+    then
+        continue
+    elif test ! -r "$direc/$nfile"  # not readable
+    then
+        echo "file $nfile is not readable."
+    else
+        fcheckls[$index]="$direc/$nfile"
+        let index++
+    fi
+done
+
+declare -i curfNum  # track current number of file in check-list
+let curfNum=0
+
+for ((checkf=0; checkf<index; checkf++))
+do
+    for ((otherf=curfNum+1; otherf<index; otherf++))
+    do
+        if test ${fcheckls[$checkf]} != ${fcheckls[$otherf]}
+        then
+            cmp -s "${fcheckls[$checkf]}" "${fcheckls[$otherf]}"
+            if test $? -eq 0 # same file
+            then
+                ln -f "${fcheckls[$checkf]}" "${fcheckls[$otherf]}"
+                fcheckls[$otherf]=${fcheckls[$checkf]}
+            fi
+        fi
+    done
+    let curfNum++
+done
+
+IFS=$old_IFS

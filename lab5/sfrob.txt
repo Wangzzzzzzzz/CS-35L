@@ -1,0 +1,285 @@
+Wang, Zheng (404855295)
+CS 35L, sfrob.txt
+
+
+1. Create the test files and find the number of lines in them:
+
+Commands:
+    dd if=/dev/urandom of=size1k bs=1024 count=1
+    dd if=/dev/urandom of=size10k bs=1024 count=10
+    dd if=/dev/urandom of=size100k bs=1024 count=100
+    dd if=/dev/urandom of=size1m bs=1024 count=1000
+    dd if=/dev/urandom of=size10m bs=1024 count=10000
+
+
+#   Find the number of lines in each file (AKA count the number of spaces since they are frobnicated):
+
+Commands:
+    egrep -ao ' ' <size1k | wc -l
+    egrep -ao ' ' <size10k | wc -l
+    egrep -ao ' ' <size100k | wc -l
+    egrep -ao ' ' <size1m | wc -l
+    egrep -ao ' ' <size10m | wc -l
+
+#   The outputs from the above commands, actual number of strings (n) in created 'sfrobu', and n*log n
+    are summarized below ( n * log n is used as qsort in average will run with time complexity O(n log n) ):
+
+ outputs    actual # lines  (n)    n * log n
+---------  ---------------------  -----------
+     7               8                  24
+    30              31                 153
+   422             423                3690
+  3970            3971               47475
+ 39768           39769              607644
+
+------------------------------------------------------------------------------------------------------------------
+
+2. Find out the actual number of comparison & the regression formula
+
+
+ #  I added extra features in the file "sfrobu.c" to track the actual number of comparisons executed
+    by the program and obtain the following result. (those features are commented after the following
+    have been executed)
+
+Commands:
+    gcc -std=c11 sfrobu.c -o sfrobu     # compile the modified version
+    ./sfrobu <size1k
+    ./sfrobu <size10k
+    ./sfrobu <size100k
+    ./sfrobu <size1m
+    ./sfrobu <size10m
+
+Output of above commands(only the # comparison is recorded):
+# comparison: 16
+# comparison: 121
+# comparison: 3136
+# comparison: 42536
+# comparison: 558411
+
+#   Using the above, I run a regression with formula:
+        # comparison = k * (n * log n) + c
+    and obtained the following equation:
+
+    # comparisons = 0.9194 * ( (# lines) * log (# lines) ) - 333.97
+
+    This formula has R^2 = 0.999998, which means that the estimation is very accurate.
+
+-------------------------------------------------------------------------------------------------------------------
+
+3. Performance measure using 'time' command
+    (the performance of copying from file to another file is measured)
+
+#   First, move the file to the current directory ~/lab5 and compile it
+Commands:
+    mv ~/lab4_sub/sfrob.c ~/lab5/sfrob.c
+    gcc -std=c11 sfrob.c -o sfrob
+
+
+#   Using the file size1k
+
+Command:
+    time ./sfrobu <size1k >out
+Output:
+real    0m0.007s
+user    0m0.002s
+sys     0m0.002s
+
+Command:
+    time ./sfrob <size1k >out
+Output:
+real    0m0.005s
+user    0m0.002s
+sys     0m0.000s
+
+Command:
+    time ./sfrobs <size1k >out
+Output:
+real    0m0.012s
+user    0m0.002s
+sys     0m0.008s
+
+Command:
+    time ./sfrobu -f <size1k >out
+Output:
+real    0m0.010s
+user    0m0.001s
+sys     0m0.003s
+
+Command:
+    time ./sfrobs -f <size1k >out
+Output:
+real    0m0.010s
+user    0m0.001s
+sys     0m0.003s
+
+..................................................................................................................
+
+#   Using the file size10k
+
+Command:
+    time ./sfrobu <size10k >out
+Output:
+real    0m0.025s
+user    0m0.004s
+sys     0m0.017s
+
+Command:
+    time ./sfrob <size10k >out
+Output:
+real    0m0.005s
+user    0m0.000s
+sys	    0m0.003s
+
+Command:
+    time ./sfrobs <size10k >out
+Output:
+real    0m0.013s
+user    0m0.005s
+sys     0m0.005s
+
+Command:
+    time ./sfrobu -f <size10k >out
+Output:
+real    0m0.024s
+user    0m0.002s
+sys     0m0.020s
+
+Command:
+    time ./sfrobs -f <size10k >out
+Output:
+real    0m0.008s
+user    0m0.003s
+sys     0m0.005s
+
+..................................................................................................................
+
+#   Using the file size100k
+
+Command:
+    time ./sfrobu <size100k >out
+Output:
+real    0m0.201s
+user    0m0.027s
+sys     0m0.170s
+
+Command:
+    time ./sfrob <size100k >out
+Output:
+real    0m0.011s
+user    0m0.006s
+sys     0m0.001s
+
+Command:
+    time ./sfrobs <size100k >out
+Output:
+real    0m0.016s
+user    0m0.002s
+sys     0m0.010s
+
+Command:
+    time ./sfrobu -f <size100k >out
+Output:
+real    0m0.204s
+user    0m0.030s
+sys     0m0.169s
+
+Command:
+    time ./sfrobs -f <size100k >out
+Output:
+real    0m0.011s
+user    0m0.005s
+sys     0m0.005s
+
+..................................................................................................................
+
+#   Using the file size1m
+
+Command:
+    time ./sfrobu <size1m >out
+Output:
+real    0m2.026s
+user    0m0.273s
+sys     0m1.736s
+
+Command:
+    time ./sfrob <size1m >out
+Output:
+real    0m0.070s
+user    0m0.051s
+sys     0m0.001s
+
+Command:
+    time ./sfrobs <size1m >out
+Output:
+real    0m0.033s
+user    0m0.005s
+sys     0m0.015s
+
+Command:
+    time ./sfrobu -f <size1m >out
+Output:
+real    0m1.980s
+user    0m0.269s
+sys     0m1.693s
+
+Command:
+    time ./sfrobs -f <size1m >out
+Output:
+real    0m0.029s
+user    0m0.006s
+sys     0m0.011s
+
+..................................................................................................................
+
+#   Using the file size10m
+
+Command:
+    time ./sfrobu <size10m >out
+Output:
+real    0m20.057s
+user    0m2.764s
+sys     0m17.146s
+
+Command:
+    time ./sfrob <size10m >out
+Output:
+real    0m0.714s
+user    0m0.489s
+sys     0m0.026s
+
+Command:
+    time ./sfrobs <size10m >out
+Output:
+real    0m0.226s
+user    0m0.073s
+sys     0m0.049s
+
+Command:
+    time ./sfrobu -f <size10m >out
+Output:
+real    0m20.163s
+user    0m2.812s
+sys     0m17.209s
+
+Command:
+    time ./sfrobs -f <size10m >out
+Output:
+real    0m0.221s
+user    0m0.054s
+sys     0m0.055s
+
+....................................................................................................................
+
+#   OBSERVATION: from the above tests, it is possible to see that the 'sfrobs' is the best algorithm among all of
+    the programs. Although when the file is small, 'sfrobs' runs slower than other programs, but as the file size
+    increases to about 100k, 'sfrobs' will perform as well as 'sfrob' and when the file size exceed that limit,
+    'sfrobs' will performs the much better than 'sfrob'.
+
+    Among the three algorithms we used, the 'sfrobu' performs the worst, and it usually takes orders of magnitudes
+    slower than the other two ('sfrobs' and 'sfrob'). This is mainly caused by the buffer used in 'sfrobs' and
+    'sfrob', which tends to decrease the time need for system calls. Since the 'sfrobu' is unbuffered, it will
+    spending a lot of time doing read, write and other system calls such as error checking. Therefore, we can
+    see that the system calls are usually responsible for more than 80% of the overall time used by 'sfrobu'
+
+    Since the time taken to run the 'sfrobu' with or without '-f' is similar and the same thing is true for
+    'sfrobs'. Thus, I think that the '-f' option does not really affect the performance a lot.

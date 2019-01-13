@@ -1,0 +1,310 @@
+Question 1:
+command:    man -k <specific_word>
+
+Description of session:
+I figure it out by reading through output of 'man man'.
+
+--------------------------------------------------------------------------------
+
+Question 2:
+command:              which mv
+mv is located at:     /usr/local/cs/bin/mv
+command:              which sh
+sh is located at:     /usr/local/cs/bin/sh
+
+Description of session:
+Use the 'man -k path.*command' to find a list of candidates;
+read the descriptions to figure out that 'which' could be used for this
+question.
+
+--------------------------------------------------------------------------------
+
+Question 3:
+command:               find /usr/local/cs/bin -executable -name '?r'
+gives executable programs 'pr' and 'tr'
+command:               find /usr/lib64/qt-3.3/bin -executable -name '?r'
+gives no executable programs
+command:               find /usr/local/bin -executable -name '?r'
+gives no executable programs
+command:               find /usr/bin -executable -name '?r'
+gives executable programs 'tr', 'ar', and 'pr'
+
+In conclusion, we have 'tr', 'ar', and 'pr' three executable programs with
+exactly two characters long and end in r.
+
+command:                man tr
+outputs:                tr - translate or delete characters
+command:                man ar
+outputs:                ar - create, modify, and extract from archives
+command:                man pr
+outputs:                pr - convert text files for printing
+
+Description of session:
+I used 'man -k find' to locate command 'find' which can search a directory.
+Since the PATH stores all the directories where one can find executable
+programs, so I used "find <each_directories_in_PATH> -executable -name '?r'"
+to find all executable programs satisfy the give condition.
+
+--------------------------------------------------------------------------------
+
+Question 4:
+command:                 readlink -f /usr/bin/emacs
+the file actually executed is /usr/bin/emacs-24.3
+
+Description of session:
+I used 'man -k symbolic' to find command 'readlink' which read a symlink and
+output the actual file executed. The option '-f' will trace down the symbolic
+link all the way down even if there are multiple layer of symbolic links.
+
+--------------------------------------------------------------------------------
+
+Question 5:
+command:	 /usr/bin/gcc --version
+output:
+gcc (GCC) 4.8.5 20150623 (Red Hat 4.8.5-28)
+Copyright (C) 2015 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
+
+command: 	 gcc --version
+output:
+gcc (GCC) 8.2.0
+Copyright (C) 2018 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.
+There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR
+PURPOSE.
+
+So the version number of /usr/bin/gcc is 4.8.5 20150623; the version number of
+gcc is 8.2.0. Since the version numbers are different, they are different
+programs.
+
+Description of session:
+I used 'man /usr/bin/gcc' to find that ' /usr/bin/gcc --version' would give the
+version number of /usr/bin/gcc program. Similarily, I used 'man gcc' to find
+that '--version' would give the same information for plain gcc program.
+
+--------------------------------------------------------------------------------
+
+Question 6:
+command: 	 man chmod
+u+sx gives user permissions to save and execute
+o-w removes the permissions of others to write
+
+Description of session:
+I read through the output of 'man chmod' to find what specifically s,x,w means
+and based on that, come up with the answer.
+
+--------------------------------------------------------------------------------
+
+Question 7:
+command:	 find /usr/local/cs -type d -mtime -28
+output:
+/usr/local/cs
+/usr/local/cs/src/bash
+/usr/local/cs/src/bash/RCS
+/usr/local/cs/src/coreutils
+/usr/local/cs/src/coreutils/RCS
+/usr/local/cs/src/gdb
+/usr/local/cs/src/gdb/RCS
+/usr/local/cs/src/jdk
+/usr/local/cs/src/jdk/RCS
+/usr/local/cs/src/ocaml
+/usr/local/cs/src/ocaml/RCS
+/usr/local/cs/share/info
+/usr/local/cs/share/man/man1
+/usr/local/cs/share/man/man5
+/usr/local/cs/share/man/man3
+/usr/local/cs/bin
+/usr/local/cs/bin/.del
+/usr/local/cs/gdb-8.2
+/usr/local/cs/gdb-8.2/share
+/usr/local/cs/gdb-8.2/share/info
+/usr/local/cs/gdb-8.2/share/gdb
+/usr/local/cs/gdb-8.2/share/gdb/python
+/usr/local/cs/gdb-8.2/share/gdb/python/gdb
+/usr/local/cs/gdb-8.2/share/gdb/python/gdb/command
+/usr/local/cs/gdb-8.2/share/gdb/python/gdb/function
+...
+(There are thousands of directories given, only the first 25 is recorded here)
+
+Description of session:
+I used 'man find' to determine that I should use '-mtime' to locate files
+modified in the last 4 weeks. Also, I find that the argument '-type d' should
+be used to restrict the search for directories.
+
+--------------------------------------------------------------------------------
+
+Question 8:
+command:	 which find
+output:		 /usr/bin/find
+command:	 find /usr/bin -type l
+output:
+/usr/bin/pmiostat
+/usr/bin/xzfgrep
+/usr/bin/updmap
+/usr/bin/systemd-coredumpctl
+/usr/bin/rpmquery
+/usr/bin/links
+/usr/bin/rmic
+/usr/bin/jarsigner
+/usr/bin/parec
+/usr/bin/nc
+...
+(There are totally 279 symbolic links, due to space, only first 10 are shown)
+
+Description of session:
+I first use 'which find' to determine the directory find is in. Then, I use
+'man find' to determine that I should use argument 'type -l' here to find the
+symbolic links. In order to count the number of lines, I used 'man -k count'
+to determine that use 'find /usr/bin -type l | wc -l' will do the job.
+
+--------------------------------------------------------------------------------
+
+Question 9:
+command: 	 cd /usr/lib64
+command: 	 ls -l -t
+The oldest file is librom1394.so.0.3.0, modified on Dec 28 2013.
+This file is 4 years, 9 month old
+
+Description of session:
+I used 'man ls' to determine that I should use '-l' and '-t' options here to
+print and sort all the files in /usr/lib64 based on modification date. Then
+I pick the last output with a '-' describing its file type (which means it
+is a regular file).
+
+--------------------------------------------------------------------------------
+
+Question 10:
+command: 	 man locale
+command:	 man localedef
+
+In the manual, it shows that /usr/lib/locale/locale-archive is the usual
+default locale archive location and /usr/share/i18n/locales is the usual
+default path for locale definition files.
+
+So usually, 'locale' get data from /usr/lib/locale/locale-archive and
+/usr/share/i18n/locales.
+
+However, sometimes, users can compiles a custom locale using 'localedef'; then,
+in this case, locale get data from localedef. (In this case the path of the
+locale data file is /usr/lib/locale, the usual default path for compiled
+individual locale data files.)
+
+--------------------------------------------------------------------------------
+
+Question 11:
+command: 	 C-h C-h
+command:	 C-h a downcase
+There are three commands with downcase in their names:
+
+	downcase-dwim
+	    Downcase words in the region, if active;
+	    if not, downcase word at point.
+
+	downcase-region
+	    Convert the region to lower case. In programs, wants two arguments.
+
+	downcase-word
+	    Convert to lower case from point to end of word, moving over.
+
+Description of session:
+I first use 'C-h C-h' to find the further help of emacs. I found that 'C-h a'
+could be used to find the command with a pattern. Then I used 'C-h a' followed
+by keyword 'downcase' to find the commands have that word in their names.
+
+--------------------------------------------------------------------------------
+
+Question 12:
+command: 	 C-h C-h
+command: 	 C-h b
+command: 	 C-x o
+command: 	 C-s C-M-s
+
+Referring to the manual, Each of keystrokes from C-M-r to C-M-v does:
+
+C-M-r   Do incremental search backward for regular expression.
+C-M-s   Do incremental search forward for regular expression.
+C-M-t   Like 'transpose-chars', but it interchange sexps around point
+	and move forward one character
+C-M-u   Move backward out of one level of parentheses.
+C-M-v   Scroll next window upward <ARG> lines; or near full screen if no <ARG>.
+
+Description of session:
+I first use 'C-h C-h' to find further help of emacs. There I found I should use
+'C-h b' to list all of the key bindings. Then I move the cursor to this window
+by 'C-x o' and use 'C-s' followed by keyword "C-M-s" (this is a string not
+control-alt-s). I did not use "C-M-r" since the keyword "C-M-r" does not go the
+correct location in the table right away.
+
+--------------------------------------------------------------------------------
+
+Question 13:
+command: 	 C-h C-h
+command:  	 C-h k C-g
+
+From the manual, C-g does the following job:
+It signal a 'quit' condition. If called during execution of Lisp code,
+this character causes a quit directly. If called at top-level,
+as an editor command, this simply beeps.
+
+Description of session:
+I first used 'C-h C-h' to pull out all of options can be attached to 'C-h'.
+I found that 'C-h k' would work for finding manuals of keystrokes. So I run
+'C-h k' followed by keystroke 'C-g' to find the manual of 'C-g' for
+detailed descriptions.
+
+--------------------------------------------------------------------------------
+
+Question 14:
+command: 	 C-h C-h
+command: 	 C-h f yank
+
+The keystroke bounded to yank are C-y.
+From the manual, yank reinsert ("paste") the last stretch of killed text.
+
+Description of session:
+I first used 'C-h C-h' to pull out all of options can be attached to 'C-h'.
+I found that 'C-h f' would work for finding manuals of commands. So I run
+'C-h k' followed by keyword 'yank' to find the manual of command 'yank'.
+
+--------------------------------------------------------------------------------
+
+Question 15:
+command: 	 cd /usr/bin
+command: 	 ls -l > ~/lab1/lsoutput.txt
+command: 	 emacs
+
+command: 	 C-x C-f Backspace Backspace Backspace Backspace
+		 Backspace Backspace Backspace Backspace
+		 ~/lab1/lsoutput.txt
+
+command: 	 C-x d Backspace Backspace Backspace Backspace
+		 Backspace Backspace Backspace
+		 /usr/bin
+
+command: 	 M-x highlight-compare-buffers
+command:	 bin
+command:	 lsoutput.txt
+
+This show that that the the output from dired has following additional content:
+	/usr/bin:
+	(total) used in directory 322508 available 12720164
+  	dr-xr-xr-x.   2 root root       77824 Sep 29 10:04 .
+  	drwxr-xr-x.  15 root root        4096 May 22 07:24 ..
+
+NOTE:
+1. total in () is same between two outputs
+2. The Backspaces in the command is used to delete the default values
+   given by emacs
+
+
+Description of session:
+use 'C-h a compare' to find the function highlight-compare-buffers would be
+useful in this question. So I load the "lsoutput.txt" into the buffer by
+'C-x C-f ~/lab1/lsoutput.txt'. Then, I load "bin" to buffer as well by 
+'C-x d /usr/bin' and set buffer-A in the comparison to be "bin" and buffer-B
+to be "lsoutput.txt". The differences between two buffers are highlighted in
+red, which is recorded above.
+
+--------------------------------------------------------------------------------

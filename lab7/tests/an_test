@@ -1,0 +1,67 @@
+execve("./randmain", ["./randmain", "1"], [/* 34 vars */]) = 0
+brk(NULL)                               = 0xc5d000
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f7337fca000
+access("/etc/ld.so.preload", R_OK)      = -1 ENOENT (No such file or directory)
+open("/u/eng/class/classini/lab7_2/tls/x86_64/libdl.so.2", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+stat("/u/eng/class/classini/lab7_2/tls/x86_64", 0x7ffea1bbb910) = -1 ENOENT (No such file or directory)
+open("/u/eng/class/classini/lab7_2/tls/libdl.so.2", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+stat("/u/eng/class/classini/lab7_2/tls", 0x7ffea1bbb910) = -1 ENOENT (No such file or directory)
+open("/u/eng/class/classini/lab7_2/x86_64/libdl.so.2", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+stat("/u/eng/class/classini/lab7_2/x86_64", 0x7ffea1bbb910) = -1 ENOENT (No such file or directory)
+open("/u/eng/class/classini/lab7_2/libdl.so.2", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+stat("/u/eng/class/classini/lab7_2", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+open("/etc/ld.so.cache", O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=157744, ...}) = 0
+mmap(NULL, 157744, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f7337fa3000
+close(3)                                = 0
+open("/lib64/libdl.so.2", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\220\r\0\0\0\0\0\0"..., 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=19288, ...}) = 0
+mmap(NULL, 2109712, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f7337ba6000
+mprotect(0x7f7337ba8000, 2097152, PROT_NONE) = 0
+mmap(0x7f7337da8000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x2000) = 0x7f7337da8000
+close(3)                                = 0
+open("/u/eng/class/classini/lab7_2/libc.so.6", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+open("/lib64/libc.so.6", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\3\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\340$\2\0\0\0\0\0"..., 832) = 832
+fstat(3, {st_mode=S_IFREG|0755, st_size=2151832, ...}) = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f7337fa2000
+mmap(NULL, 3981792, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f73377d9000
+mprotect(0x7f733799c000, 2093056, PROT_NONE) = 0
+mmap(0x7f7337b9b000, 24576, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0x1c2000) = 0x7f7337b9b000
+mmap(0x7f7337ba1000, 16864, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_ANONYMOUS, -1, 0) = 0x7f7337ba1000
+close(3)                                = 0
+mmap(NULL, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f7337fa0000
+arch_prctl(ARCH_SET_FS, 0x7f7337fa0740) = 0
+mprotect(0x7f7337b9b000, 16384, PROT_READ) = 0
+mprotect(0x7f7337da8000, 4096, PROT_READ) = 0
+mprotect(0x600000, 4096, PROT_READ)     = 0
+mprotect(0x7f7337fcb000, 4096, PROT_READ) = 0
+munmap(0x7f7337fa3000, 157744)          = 0
+open("/u/eng/class/classini/lab7_2/randlibsw.so", O_RDONLY|O_CLOEXEC) = 3
+read(3, "\177ELF\2\1\1\0\0\0\0\0\0\0\0\0\3\0>\0\1\0\0\0\360\5\0\0\0\0\0\0"..., 832) = 832
+brk(NULL)                               = 0xc5d000
+brk(0xc7e000)                           = 0xc7e000
+brk(NULL)                               = 0xc7e000
+fstat(3, {st_mode=S_IFREG|0755, st_size=45080, ...}) = 0
+mmap(NULL, 2101328, PROT_READ|PROT_EXEC, MAP_PRIVATE|MAP_DENYWRITE, 3, 0) = 0x7f73375d7000
+mprotect(0x7f73375d8000, 2093056, PROT_NONE) = 0
+mmap(0x7f73377d7000, 8192, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_FIXED|MAP_DENYWRITE, 3, 0) = 0x7f73377d7000
+close(3)                                = 0
+mprotect(0x7f73377d7000, 4096, PROT_READ) = 0
+open("/dev/urandom", O_RDONLY)          = 3
+fstat(3, {st_mode=S_IFCHR|0666, st_rdev=makedev(1, 9), ...}) = 0
+ioctl(3, TCGETS, 0x7ffea1bbcf30)        = -1 EINVAL (Invalid argument)
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f7337fc9000
+read(3, "7\234w3\376\354\263;\10\243}\0336\211\242\212\344\350\n&\235E\\\340\353\213\235#\\ifx"..., 4096) = 4096
+fstat(1, {st_mode=S_IFCHR|0620, st_rdev=makedev(136, 8), ...}) = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f7337fc8000
+write(1, "73\n", 373
+)                     = 3
+close(1)                                = 0
+munmap(0x7f7337fc8000, 4096)            = 0
+close(3)                                = 0
+munmap(0x7f7337fc9000, 4096)            = 0
+munmap(0x7f73375d7000, 2101328)         = 0
+exit_group(0)                           = ?
++++ exited with 0 +++

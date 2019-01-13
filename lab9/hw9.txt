@@ -1,0 +1,138 @@
+Wang, Zheng (404855295)
+CS35L lab9.txt
+
+#   NOTE: this homework is done in ~/lab9
+
+1. done
+
+-----------------------------------------------------------------------------------------
+
+2. Checkout version 3.0 into a new branch
+
+Command:
+    cd diffutils
+    git checkout v3.0 -b quote
+
+-----------------------------------------------------------------------------------------
+
+3. Then, I install the patch "quote-3.0-patch.txt"
+
+Command:
+    patch -p1 <../quote-3.0-patch.txt
+
+Output:
+    patching file src/cmp.c
+    patching file src/diff.c
+    patching file src/diff3.c
+    patching file src/dir.c
+    patching file src/sdiff.c
+    patching file src/util.c
+
+-----------------------------------------------------------------------------------------
+
+4. learn the emacs function 'add-change-log-entry-other-window'
+
+-----------------------------------------------------------------------------------------
+
+5. Compose an appropriate ChangeLog for the patch "quote-3.0-patch.txt"
+
+Command:
+    emacs
+    C-x 4 a
+
+Then I copy the log related to the changes I made (from quote-patch.txt) to the ChangeLog file,
+the copy of my ChangeLog is shown below:
+
+    2018-12-05  Zheng Wang  <classini@lnxsrv06.seas.ucla.edu>
+
+        This is in response to a recent change in the GNU coding standards,
+        which now suggest quoting 'like this' or "like this", instead of
+        `like this' or ``like this''.
+        * src/cmp.c (try_help, specify_ignore_initial, usage, main):
+        * src/diff.c (main, try_help, option_help_msgid, specify_value)
+        (compare_files):
+        * src/diff3.c (main, try_help, option_help_msgid, usage)
+        (read_diff):
+        * src/dir.c (compare_names):
+        * src/sdiff.c (try_help, usage, check_child_status, main):
+        * src/util.c (finish_output):
+        Quote 'like this' in output.
+
+-----------------------------------------------------------------------------------------
+
+6. Commit the changes I made
+
+Command:
+    git add .
+    git commit -F ChangeLog
+
+-----------------------------------------------------------------------------------------
+
+7. Use the 'git format-patch' to generate 'formatted-patch.txt' and test it
+
+Command:
+    git format-patch -1 HEAD --stdout >../formatted-patch.txt
+
+-----------------------------------------------------------------------------------------
+
+8. Check my partner's patch (my partner is Henry Ou)
+
+Command:
+    git checkout v3.0
+    git checkout -b partner
+    <copy my partner's patch to ~/lab9>
+    git am ../formatted-patch.txt
+
+    ./bootstrap
+    patch -p0 <../diffutils-gets.diff
+    ./configure
+    make
+    make check
+
+My partner's make check does not pass, but if I run './src/diff . -', the output is
+    ./src/diff: cannot compare '-' to a directory.
+The similar thing happen for my patch as well, but the above command still work.
+
+
+-----------------------------------------------------------------------------------------
+
+9. Run make distdir
+
+Command:
+    make distdir
+    cd diffutils-3.0.1-3dc9/
+    emacs ChangeLog
+
+I can see that my lab partner's ChangeLog is:
+    2018-12-05  Heng Rui Ou  <classgou@lnxsrv09.seas.ucla.edu>
+
+        2018-12-05 Heng Rui Ou <classgou@lnxsrv09.seas.ucla.edu>
+        maint: quote 'like this' or "like this", not `like this'
+
+            This is in response to a recent change in the GNU coding standards,
+            which now suggest quoting 'like this' or "like this", instead of
+            `like this' or ``like this''.
+            * src/cmp.c (try_help, specify_ignore_initial, usage, main):
+            * src/diff.c (main, try_help, option_help_msgid, specify_value)
+            (compare_files):
+            * src/diff3.c (main, try_help, option_help_msgid, usage)
+            (read_diff):
+            * src/dir.c (compare_names):
+            * src/sdiff.c (try_help, usage, check_child_status, main):
+            * src/util.c (finish_output):
+            Quote 'like this' in output.
+
+Thus, my partner's patch works fine. The similar result is shown in my partner's
+ChangeLog.
+
+-----------------------------------------------------------------------------------------
+
+10. Try to use graphic interface.
+
+Command:
+    # login to SEAsnet server with -X option
+
+    ssh -X classini@lnxsrv06.seas.ucla.edu
+
+    cd ~eggert/src/gnu/emacs
+    gitk

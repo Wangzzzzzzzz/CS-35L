@@ -1,0 +1,125 @@
+Wang, Zheng (404855295)
+CS 35L log.txt
+
+#   This lab is done in ~/lab6
+
+1. Check the version of 'sort'
+
+#   NOTE: I have modified the file .bashrc and .bash_profile so that the SEASnet server should automatically
+    prepend the path '/usr/local/cs/bin' in the PATH. Thus, I confirm this using 'echo $PATH'. Indeed, this
+    path has been prepended.
+
+Commands:
+    echo $PATH
+
+Output:
+/usr/local/cs/bin:/usr/lib64/qt-3.3/bin:/u/eng/class/classini/perl5/bin:/usr/local/bin:/usr/bin:/usr/X11R6/bin:/usr/local/cs/bin:/u/eng/class/classini/bin
+
+
+#   NOTE: since we have ensured that '/usr/local/cs/bin' has been prepended, we then check the version of the coreutils.
+
+Commands:
+    sort --version
+
+Output:
+sort (GNU coreutils) 8.30
+Copyright (C) 2018 Free Software Foundation, Inc.
+License GPLv3+: GNU GPL version 3 or later <https://gnu.org/licenses/gpl.html>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Mike Haertel and Paul Eggert.
+
+#   Since the version is 8.30, much newer than the need version (version 8.6, released on 2010-10-15), we
+    should be safe.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+2. generating the random float
+
+Commands:
+    od -A n -N $((4*(2**24))) -t fF </dev/urandom | tr -s '[:blank:]' '\n' | sed '/^[[:space:]]*$/d' >random.txt
+
+#   NOTE: 4*(2**24) is used here as each single-precision floating point digit has size 4 bytes (32 bits).
+    Thus, we will read 4*(2**24) bytes in total. The command " sed '/^[[:space:]]*$/d' " is used to delete
+    empty white lines. Finally, we run the following command to check if we indeed get 2^24 number.
+
+Commands:
+    wc -l <random.txt
+
+Output:
+16777216
+
+#   Since 2^24 = 16777216, the file we created has the correct number of lines and we are safe.
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+3. Compare performance of sort
+
+(a) Direct call
+
+Commands:
+    time -p sort -g random.txt >/dev/null
+
+Outputs:
+real 40.31
+user 225.30
+sys 1.38
+
+
+
+(b) Using --parallel=1 option
+
+Commands:
+    time -p sort --parallel=1 -g random.txt >/dev/null
+
+Outputs:
+real 181.39
+user 180.74
+sys 0.64
+
+
+
+(c) Using  --parallel=2 option
+
+Commands:
+    time -p sort --parallel=2 -g random.txt >/dev/null
+
+Outputs:
+real 96.35
+user 182.48
+sys 0.80
+
+
+
+(d) Using --parallel=4 option
+
+Commands:
+    time -p sort --parallel=4 -g random.txt >/dev/null
+
+Outputs:
+real 61.00
+user 208.34
+sys 1.19
+
+
+
+(e) Using --parallel=8 option
+
+Commands:
+    time -p sort --parallel=8 -g random.txt >/dev/null
+
+Outputs:
+real 35.90
+user 198.63
+sys 1.10
+
+
+
+#   OVSERVATION: As the number of threads (parallelism) increase, the real time performance would improve.
+    This improvement is most significant when we increase the number of threads from 1 to 2. This
+    improvement however, decreases as we increase the number of threads, this is because although some
+    job in 'sort' can be done in parallel, some job has to be done in order. Running time of those job cannot
+    be reduced by multithreading.
+    Moreover, the time used for system call (sys) and user program (user) does not change much as the
+    number of threads increase.
