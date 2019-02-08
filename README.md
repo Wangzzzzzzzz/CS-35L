@@ -18,4 +18,4 @@ https://web.cs.ucla.edu/classes/fall18/cs35L/
 | Lab 7 | 100 | |
 | Lab 8 | 100 | |
 | Lab 9 | 100 | |
-| Lab 10 | 92.5 | most people gets 90 + (max 5% of extra credit) |
+| Lab 10 | 92.5 |  |
