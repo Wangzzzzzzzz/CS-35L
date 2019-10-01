@@ -1,9 +1,7 @@
 # CS-35L
 Fall 2018 CS35L. TA: Guangyu Zhou
 
-## homework prompts:
-
-https://web.cs.ucla.edu/classes/fall18/cs35L/
+* Warining: This repository only contains my codes and NO prompt! The question prompts of each quarter might be different for each project, and codes from this repository might not work for your projects.
 
 ## Result Summary:
 
