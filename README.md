@@ -1,7 +1,7 @@
 # CS-35L
 Fall 2018 CS35L. TA: Guangyu Zhou
 
-* Warining: This repository only contains my codes and NO prompt! The question prompts of each quarter might be different for each project, and codes from this repository might not work for your projects.
+* Warining: This repository only contains my codes and NO prompt! The question prompts of each quarter might be different for each project. Direct copying of the codes from this repository might results in bad consequences.
 
 ## Result Summary:
 
